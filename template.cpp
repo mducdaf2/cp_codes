@@ -1,4 +1,17 @@
-// Author: Mai Duc - @daf_2
+/*
+     _        __   ____  
+  __| | __ _ / _| |___ \ 
+ / _` |/ _` | |_    __) |
+| (_| | (_| |  _|  / __/ 
+ \__,_|\__,_|_|   |_____|
+ 
+- Author: Mai Duc
+- Codeforces: daf_2
+- GitHub: mducdaf2
+*/
+
+// Link problem: 
+
 #include <bits/stdc++.h> 
 using namespace std;
 
