@@ -1,0 +1,42 @@
+name: Auto Organize Daily CP Codes
+
+on:
+  schedule:
+    # 23:30 giờ Việt Nam (UTC+7) tương ứng với 16:30 giờ UTC
+    - cron: '30 16 * * *'
+  workflow_dispatch: # Cho phép bấm nút chạy thử thủ công trên web GitHub
+
+jobs:
+  organize-and-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Organize Daily Codes
+        run: |
+          # Cấu hình Git Bot
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Lấy ngày hiện tại theo giờ Việt Nam (UTC+7)
+          TODAY=$(TZ="Asia/Ho_Chi_Minh" date +%Y-%m-%d)
+          TARGET_DIR="DailyCodes/$TODAY"
+
+          # Tạo thư mục của ngày hôm nay nếu chưa có
+          mkdir -p "$TARGET_DIR"
+
+          # Quét và di chuyển tất cả file code nằm ở gốc DailyCodes vào thư mục ngày
+          # (Hỗ trợ các đuôi file CP phổ biến: .cpp, .py, .java, .pas, .rs)
+          find DailyCodes/ -maxdepth 1 -type f \( -name "*.cpp" -o -name "*.py" -o -name "*.java" -o -name "*.pas" -o -name "*.rs" \) -exec mv {} "$TARGET_DIR/" \;
+
+          # Kiểm tra xem có thay đổi (file được chuyển) không
+          git add DailyCodes/
+          if git diff --staged --quiet; then
+            echo "Không có file code mới nào cần gom."
+          else
+            git commit -m "Auto-organize CP codes for $TODAY"
+            git push
+          fi
